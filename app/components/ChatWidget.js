@@ -213,11 +213,17 @@ function formatTime(date) {
   });
 }
 
-// Simple markdown renderer
+// Simple markdown renderer that keeps output neat, clean and free of raw markdown artifacts
 function renderMarkdown(text) {
   if (!text) return "";
 
   let html = text
+    // Strip markdown headings (e.g. # Heading -> clean strong heading)
+    .replace(/^#{1,6}\s*(.+)$/gm, "<strong>$1</strong>")
+    // Strip horizontal rules / lines of dashes (---, ___, ***)
+    .replace(/^\s*[-*_]{2,}\s*$/gm, "")
+    // Strip standalone double-dashes used as dividers
+    .replace(/\s+--+\s+/g, " ")
     // Bold
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     // Links
@@ -231,7 +237,7 @@ function renderMarkdown(text) {
       '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
     )
     // Unordered lists
-    .replace(/^[\-\*] (.+)$/gm, "<li>$1</li>")
+    .replace(/^[\-\*•] (.+)$/gm, "<li>$1</li>")
     // Numbered lists
     .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
     // Line breaks
@@ -245,6 +251,7 @@ function renderMarkdown(text) {
 
   return html;
 }
+
 
 export default function ChatWidget({ standalone = false }) {
   const [isOpen, setIsOpen] = useState(standalone ? true : false);
