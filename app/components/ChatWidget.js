@@ -282,6 +282,9 @@ export default function ChatWidget({ standalone = false }) {
   };
 
   const closeChat = () => {
+    if (typeof window !== "undefined" && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "AARIZE_CHAT_CLOSE" }, "*");
+    }
     setIsClosing(true);
     setTimeout(() => {
       setIsOpen(false);
@@ -289,6 +292,7 @@ export default function ChatWidget({ standalone = false }) {
       setIsExpanded(false);
     }, 300);
   };
+
 
   const toggleExpand = () => {
     setIsExpanded((prev) => !prev);
@@ -490,29 +494,18 @@ export default function ChatWidget({ standalone = false }) {
                   >
                     {isExpanded ? <ShrinkIcon /> : <ExpandIcon />}
                   </button>
-                  {!standalone && (
-                    <>
-                      <button
-                        className="chat-action-btn"
-                        onClick={closeChat}
-                        title="Minimize"
-                        aria-label="Minimize"
-                      >
-                        <MinimizeIcon />
-                      </button>
-                      <button
-                        className="chat-action-btn close-btn"
-                        onClick={closeChat}
-                        title="Close"
-                        aria-label="Close"
-                      >
-                        <CloseHeaderIcon />
-                      </button>
-                    </>
-                  )}
+                  <button
+                    className="chat-action-btn close-btn"
+                    onClick={closeChat}
+                    title="Close"
+                    aria-label="Close"
+                  >
+                    <CloseHeaderIcon />
+                  </button>
                 </div>
               </div>
             </div>
+
 
             {showOnboarding ? (
               /* Onboarding Form */
